@@ -1,0 +1,39 @@
+in 1437
+
+Background:
+	You are the hacker that is also the only and current it expert on the Firm.
+	The company is ramping up and they need someone to help develop
+	the sales department.
+	One of the things the Sales people say they want it a discrepancy analyzer
+	for their Record of Sales (ROS) files they get from their store managers. 
+
+	You will write a quick PoC for the Sales people and demo it tomorrow.
+	This will be the first version and they will give you feedback on how
+	to proceed.
+
+Technical:
+	A record of sales (ROS) file is a date-/store-prefixed file as 
+
+	  	    august-south_branch-2011.ros
+ 
+       in CSV format with multiple lines of the type
+
+              ITEM, SOLD_THIS_MONTH, PROJECTED_INCOME_BY_SALES_OF_ITEM
+
+       However, The last line in each .ros is a grand total for that month on the actual 
+       income that store had for that month
+
+       	      TOTAL_INCOME
+
+Task:
+	You are to write an erlang program that reads multiple ROS's and outputs discrepancies
+	found between projected income and TOTAL_INCOME.
+
+	There are 5 .ros files available for you to test your program with.
+
+
+
+ Think about:
+       - what if the .ros internal format changes in the future?
+       - will the analysis requirement change in the future?	
+
