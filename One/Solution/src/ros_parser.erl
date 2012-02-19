@@ -6,16 +6,21 @@
 parse("")-> {error,no_total};
 
 parse(Input) -> 
-    [Total|Lines] = lists:reverse(string:tokens(Input,"\n")),    
-    Entries = lists:sort([ parse_row(Line) || Line <- Lines]),
-    {ok,#ros{total = list_to_integer(Total),
-	     entries = Entries}}.
+    [Total|Lines] = lists:reverse(string:tokens(Input,"\n")),
+    case (catch list_to_integer(Total)) of
+	{'EXIT',_ } ->
+	    {error,no_total};
+	IntTotal ->
+	    Entries = lists:sort([ parse_row(Line) || Line <- Lines]),
+	    {ok,#ros{total = IntTotal,
+		     entries = Entries}}
+    end.
 
 parse_row(Line) ->
     [Type,Sold,Projected] = string:tokens(Line,","),
     #entry{type = Type,
-	  sold = list_to_integer(Sold),
-	  projected = list_to_integer(Projected)}.
+	   sold = list_to_integer(Sold),
+	   projected = list_to_integer(Projected)}.
     
     
     

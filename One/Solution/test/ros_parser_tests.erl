@@ -18,4 +18,9 @@ ros_parse_basic_test() ->
 				   ],
 			total = 3}},
 		 ros_parser:parse(Input)).
+
+ros_parse_negative_no_total_but_rows_test() ->
+    Input = "a,1,1\nb,2,2",
+    ?assertMatch({error,no_total},ros_parser:parse(Input)).
+    
 		    
