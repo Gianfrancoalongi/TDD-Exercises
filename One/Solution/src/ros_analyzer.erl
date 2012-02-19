@@ -9,7 +9,9 @@ analyze(#ros{total = Total,entries = Entries}) ->
 	X when X < 0 ->
 	    {error,{underflow,X}};
 	X when X > 0 ->
-	    {error,{overflow,X}}
+	    {error,{overflow,X}};
+	0 ->
+	    ok
     end.
 
 sum_entries([]) -> 0;

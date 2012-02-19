@@ -17,6 +17,15 @@ analysis_overflow_discrepancy_test() ->
     Analysis_input = #ros{entries = Entries,
 			  total = 9},
     ?assertEqual({error,{overflow,1}},ros_analyzer:analyze(Analysis_input)).
+
+analysis_ok_test() ->
+    Entries = [#entry{type = "a",
+		      sold = 1,
+		      projected = 10}],
+    Analysis_input = #ros{entries = Entries,
+			  total = 10},
+    ?assertEqual(ok,ros_analyzer:analyze(Analysis_input)).
+
     
 
     
