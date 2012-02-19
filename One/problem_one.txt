@@ -29,7 +29,7 @@ Task:
 	You are to write an erlang program that reads multiple ROS's and outputs discrepancies
 	found between projected income and TOTAL_INCOME.
 
-	There are 5 .ros files available for you to test your program with.
+	There are 4 .ros files available for you to test your program with.
 
 
 
