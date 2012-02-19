@@ -4,4 +4,4 @@ all:
 .PHONY: test
 
 test:
-	erl -pa ebin/ -eval 'eunit:test(ros_reader,[verbose]).'
+	erl -pa ebin/ -eval 'eunit:test(ros_reader,[verbose]),init:stop().'
