@@ -3,7 +3,7 @@
 	 read_dir/1
 	]).
 
--spec(read_file(string()) -> {ok,term()} | {error,no_such_file}).
+-spec(read_file(string()) -> binary() | {error,no_such_file}).
 read_file(File) ->
     case file:read_file(File) of
 	{error,enoent} ->
