@@ -7,7 +7,9 @@ analyze(#ros{total = Total,entries = Entries}) ->
     Entries_Total = sum_entries(Entries),
     case Entries_Total - Total of
 	X when X < 0 ->
-	    {error,{underflow,X}}
+	    {error,{underflow,X}};
+	X when X > 0 ->
+	    {error,{overflow,X}}
     end.
 
 sum_entries([]) -> 0;
