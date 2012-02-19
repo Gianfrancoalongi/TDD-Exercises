@@ -15,5 +15,11 @@ ros_read_dir_test() ->
 		  [{"file_a.ros",ResultA},
 		   {"file_b.ros",ResultB}]},
 		 ros_reader:read_dir(Dir)).
+
+ros_read_negative_test() ->
+    Dir = "./test/non_existent/",
+    ?assertMatch({error,no_such_dir},
+		 ros_reader:read_dir(Dir)).
+		  
     
     

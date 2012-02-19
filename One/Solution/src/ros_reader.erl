@@ -11,11 +11,13 @@ read_file(File) ->
 	R -> R
     end.
 
--spec(read_dir(string()) -> {ok,[{string(),term()}]}).
+-spec(read_dir(string()) -> {ok,[{string(),term()}]} | {error,no_such_dir}).
 read_dir(Dir) ->
     case file:list_dir(Dir) of
 	{ok,Files} ->
 	    Res = [{File, read_file(filename:join(Dir,File))} || File <- Files ],	    
-	    {ok,lists:sort(Res)}
+	    {ok,lists:sort(Res)};
+	{error,enoent} ->
+	    {error,no_such_dir}
     end.
 
