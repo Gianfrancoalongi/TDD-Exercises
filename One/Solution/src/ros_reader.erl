@@ -8,7 +8,7 @@ read_file(File) ->
     case file:read_file(File) of
 	{error,enoent} ->
 	    {error,no_such_file};
-	R -> R
+	{ok,R} -> R
     end.
 
 -spec(read_dir(string()) -> {ok,[{string(),term()}]} | {error,no_such_dir}).

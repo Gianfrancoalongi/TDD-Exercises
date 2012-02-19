@@ -6,4 +6,6 @@ all:
 test:
 	erl -pa ebin/ -eval 'eunit:test(ros_reader,[verbose]),\
 			     eunit:test(ros_parser,[verbose]),\
-		             eunit:test(ros_analyzer,[verbose]),init:stop().'
+		             eunit:test(ros_analyzer,[verbose]),\
+	     		     eunit:test(ros_engine,[verbose]),\
+			     init:stop().'
