@@ -2,7 +2,7 @@
 -include("include/ros.hrl").
 -export([analyze/1]).
 
--spec(analyze(#ros{}) -> {error,{underflow,integer()}}).
+-spec(analyze(#ros{}) -> {error,{total_grater_than_projected | total_less_than_projected,integer()}} | ok).
 analyze(#ros{total = Total,entries = Entries}) ->
     Entries_Total = sum_entries(Entries),
     case Entries_Total - Total of
