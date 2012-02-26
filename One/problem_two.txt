@@ -1,0 +1,82 @@
+
+Background:
+	Having shown the PoC for the Sales department during a lunch break,
+	the Sales people seemed happy.
+	This seemed to be what they wanted, of course there where some murmurs
+	of "why don't we use Excel instead", besides this, one additional specific feature
+	was required.
+	The head of Sales also agreed on defining a user acceptance test to seal the definition
+	of done..
+
+Technical:
+
+	The additional feature was the output of the result
+
+	 - The result of an analysis must be output to a file named according 
+	   to the following scheme
+  
+             analysis_result_${DIRECTORY_ANALYZED}.txt
+
+	   
+	   This means, that if the sales people run the program on a 
+	   directory called ros_winter_2011/
+	   the result is output to a file called
+
+ 	     analysis_result_ros__winter_2011.txt
+
+ 	   Where the content of the file is grouped by two headers
+	   
+	     'PASSED_FILES:'
+
+          and 
+
+ 	     'FAILED_FILES:'
+
+	  each line under the heading 'PASSED_FILES:' is the name of the file
+	  where the projected sum and total sum matches.
+
+	  each lin under the heading 'FAILED_FILES:' is the name of the file
+	  where the projected sum and total sum did not match.
+	  On the failed files, add the cause to why it did not match.
+	  
+	  Example: A directory named RosFiles/ contains the following .ros files
+                   2012-01-a.ros <--- OK
+		   2012-02-a.ros <--- OK
+		   2012-03-a.ros <--- Not okay
+		   2012-01-b.ros <--- OK
+		   2012-02-b.ros <--- Not okay
+		   2012-03-b.ros <----Not okay
+         
+          Thus running the program with this directory as input, the result
+	  should be a file called
+
+	  	 
+             analysis_result_RosFiles.txt
+
+	 containing
+
+	     PASSED_FILES:
+	     2012-01-a.ros
+	     2012-02-a.ros
+	     2012-01-b.ros
+	     
+	     FAILED_FILES:
+	     2012-03-a.ros,cause for failure
+	     2012-02-b.ros,cause for failure
+	     2012-03-b.ros,cause for failure
+
+	You where given a bunch of files for this, put into a directory 
+	user_acceptance_test/ together with a file which holds the exact
+	expected result, but named user_acceptance_test.txt
+
+Task:
+	Add the extra feature, so that you pass the user acceptance test
+	by reading the files from the directory and your output file
+	analysis_result_user_acceptance_test.txt contains the same 
+	as the file user_acceptance_test.txt
+
+
+	   
+	   
+	 
+	
