@@ -8,7 +8,7 @@ analysis_underflow_discrepancy_test() ->
 		      projected = 10}],
     Analysis_input = #ros{entries = Entries,
 			  total = 11},
-    ?assertEqual({error,{underflow,-1}},ros_analyzer:analyze(Analysis_input)).
+    ?assertEqual({error,{total_greater_than_projected,1}},ros_analyzer:analyze(Analysis_input)).
 
 analysis_overflow_discrepancy_test() ->
     Entries = [#entry{type = "a",
@@ -16,7 +16,7 @@ analysis_overflow_discrepancy_test() ->
 		      projected = 10}],
     Analysis_input = #ros{entries = Entries,
 			  total = 9},
-    ?assertEqual({error,{overflow,1}},ros_analyzer:analyze(Analysis_input)).
+    ?assertEqual({error,{total_less_than_projected,1}},ros_analyzer:analyze(Analysis_input)).
 
 analysis_ok_test() ->
     Entries = [#entry{type = "a",

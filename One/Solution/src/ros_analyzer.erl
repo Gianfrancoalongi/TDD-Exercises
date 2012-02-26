@@ -7,9 +7,9 @@ analyze(#ros{total = Total,entries = Entries}) ->
     Entries_Total = sum_entries(Entries),
     case Entries_Total - Total of
 	X when X < 0 ->
-	    {error,{underflow,X}};
+	    {error,{total_greater_than_projected,-X}};
 	X when X > 0 ->
-	    {error,{overflow,X}};
+	    {error,{total_less_than_projected,X}};
 	0 ->
 	    ok
     end.
