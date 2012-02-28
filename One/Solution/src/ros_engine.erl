@@ -1,7 +1,7 @@
 -module(ros_engine).
 -export([run_dir/1]).
 
--spec(run_dir(string()) -> [{string(),ok} | {error,no_total}]).
+-spec(run_dir(string()) -> [{string(),ok | {error,term()}}]).
 run_dir(Dir) ->
     case ros_reader:read_dir(Dir) of
 	{ok,Files_Content} ->

@@ -8,4 +8,5 @@ test:
 			     eunit:test(ros_parser,[verbose]),\
 		             eunit:test(ros_analyzer,[verbose]),\
 	     		     eunit:test(ros_engine,[verbose]),\
+			     eunit:test(ros,[verbose]),\
 			     init:stop().'

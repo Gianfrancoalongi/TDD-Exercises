@@ -14,8 +14,9 @@ read_file(File) ->
 -spec(read_dir(string()) -> {ok,[{string(),term()}]} | {error,no_such_dir}).
 read_dir(Dir) ->
     case file:list_dir(Dir) of
-	{ok,Files} ->
-	    Res = [{File, read_file(filename:join(Dir,File))} || File <- Files ],	    
+	{ok,Files} ->	    
+	    OnlyRos = [ File || File <- Files, filename:extension(File) == ".ros"],
+	    Res = [{File, read_file(filename:join(Dir,File))} || File <- OnlyRos ],
 	    {ok,lists:sort(Res)};
 	{error,enoent} ->
 	    {error,no_such_dir}
