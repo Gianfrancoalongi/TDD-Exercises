@@ -4,7 +4,7 @@
 
 ros_parse_empty_test() ->
     Input = "",
-    ?assertMatch({error,no_total},ros_parser:parse(Input)).
+    ?assertMatch({error,no_data},ros_parser:parse(Input)).
 
 ros_parse_basic_test() ->
     Input = "a,1,1\nb,2,2\n3",

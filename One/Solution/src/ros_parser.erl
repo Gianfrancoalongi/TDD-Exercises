@@ -2,8 +2,8 @@
 -export([parse/1]).
 -include("include/ros.hrl").
 
--spec(parse(string()) -> {error,no_total} | {ok,#ros{}}).
-parse("")-> {error,no_total};
+-spec(parse(string()) -> {error,no_data} | {ok,#ros{}}).
+parse("")-> {error,no_data};
 
 parse(Input) -> 
     [Total|Lines] = lists:reverse(string:tokens(Input,"\n")),

@@ -14,6 +14,6 @@ ros_engine_negative_test() ->
     Dir = "test/ros_files/",
     Res = ros_engine:run_dir(Dir),
     ?assertEqual(
-    [{"file_a.ros",{error,no_total}},
-     {"file_b.ros",{error,no_total}}],Res).
+    [{"file_a.ros",{error,no_data}},
+     {"file_b.ros",{error,no_data}}],Res).
     
