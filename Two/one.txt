@@ -1,0 +1,25 @@
+Background:
+	You work for a medium sized Software Company focusing on delivering
+	online training platforms for education withing different sectors. 
+	
+	A dynamic platform base is being outlined and you are part of the
+	small task force for this.
+
+	The idea is to deploy a generic server with plug-in capabilities
+	which are controlled by a simple socket interface. 
+	
+
+Technical:
+
+	A first PoC that starts up, opens a port on 50001 and receives
+	the possible commands, with following result
+
+	bind $TYPE $FILE - declare that input and output is processed through $FILE
+	unbind $TYPE - removes declaration
+	list bind - lists all bindings
+
+	open $PORT $TYPE - opens a port on which all sent/received data is processed through the $TYPE binding
+	close $PORT - closes the port which processed data through a specific $TYPE
+	list port - lists all user opened ports
+
+	Should be fully tested.
