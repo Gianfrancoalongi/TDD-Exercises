@@ -1,5 +1,5 @@
 -module(port).
--export([open/2,
+-export([open/3,
 	 close/1
 	]).
 -record(port,{type :: echo,
@@ -7,12 +7,12 @@
 	      number :: integer()
 	     }).
 
--spec(open(integer(),atom() | string()) -> {ok,gen_tcp:socket()}).
-open(Port,echo) ->
+-spec(open(string(),integer(),atom() | string()) -> {ok,gen_tcp:socket()}).
+open(_,Port,echo) ->
     {ok,Sock} = gen_tcp:listen(Port,[{active,false}]),
-    {ok,#port{ type = echo,
-	       socket = Sock,
-	       number = Port}}.
+    {ok,#port{type = echo,
+	      socket = Sock,
+	      number = Port}}.
 
 -spec(close(#port{}) -> ok).
 close(Port) ->

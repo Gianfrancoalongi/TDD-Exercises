@@ -4,7 +4,8 @@
 echo_port_open_close_test() ->
     Port = 50001,
     Type = echo,
-    {ok,Openport} =  port:open(Port,Type),
+    FileDir = "./test/test_files/",
+    {ok,Openport} =  port:open(FileDir,Port,Type),
     assert_port_open(Port),
     port:close(Openport),
     assert_port_closed(Port).
