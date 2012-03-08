@@ -9,7 +9,8 @@
 
 -spec(open(string(),integer(),atom() | string()) -> {ok,gen_tcp:socket()} |
 						    {error,no_such_module}|
-						    {error,compile_error}).
+						    {error,compile_error} |
+						    {error,no_handle_function_exported}).
 open(_,Port,echo) ->
     {ok,Sock} = gen_tcp:listen(Port,[{active,false}]),
     {ok,#port{type = echo,
@@ -29,10 +30,15 @@ open(FileDir,Port,ModuleName) ->
 		    {error,compile_error};
 		{ok,Module,Binary} ->
 		    {module,Module} = code:load_binary(Module,ErlSource,Binary),
-		    {ok,Sock} = gen_tcp:listen(Port,[{active,false}]),		    
-		    {ok,#port{type = ModuleName,
-			      socket = Sock,
-			      number = Port}}
+		    case erlang:function_exported(Module,handle,1) of
+			false ->
+			    {error,no_handle_function_exported};
+			true ->
+			    {ok,Sock} = gen_tcp:listen(Port,[{active,false}]),		    
+			    {ok,#port{type = ModuleName,
+				      socket = Sock,
+				      number = Port}}
+		    end
 	    end
     end.    
 

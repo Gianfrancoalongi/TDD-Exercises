@@ -30,6 +30,12 @@ module_does_exist_and_compilation_warning_open_test() ->
     assert_port_open(Port),
     port:close(Openport),
     assert_port_closed(Port).
+
+module_does_exist_but_does_not_export_handle_function_test() ->
+    Port = 50005,
+    Type = "compilation_no_exported_handle_function_module",
+    FileDir = "./test/test_files/",
+    ?assertMatch({error,no_handle_function_exported},port:open(FileDir,Port,Type)).
     
 
 %% ------------------------------------------------------------
