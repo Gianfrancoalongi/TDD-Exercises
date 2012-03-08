@@ -16,6 +16,14 @@ module_does_not_exist_port_failure_test() ->
     FileDir = "./test/test_files/",
     ?assertEqual({error,no_such_module},port:open(FileDir,Port,Type)).
 
+module_does_exist_but_can_not_compile_test() ->
+    Port = 50001,
+    Type = "compilation_error_module",
+    FileDir = "./test/test_files/",
+    ?assertMatch({error,compile_error},port:open(FileDir,Port,Type)).
+
+    
+
 %% ------------------------------------------------------------
 assert_port_open(Port) ->
     {ok,Sock} = gen_tcp:connect("localhost",Port,[]),
