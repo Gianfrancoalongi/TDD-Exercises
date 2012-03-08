@@ -36,7 +36,15 @@ module_does_exist_but_does_not_export_handle_function_test() ->
     Type = "compilation_no_exported_handle_function_module",
     FileDir = "./test/test_files/",
     ?assertMatch({error,no_handle_function_exported},port:open(FileDir,Port,Type)).
-    
+
+module_exists_and_is_clean_open_test() ->
+    Port = 50006,
+    Type = "compilation_clean_module",
+    FileDir = "./test/test_files/",
+    {ok,Openport} =  port:open(FileDir,Port,Type),
+    assert_port_open(Port),
+    port:close(Openport),
+    assert_port_closed(Port).
 
 %% ------------------------------------------------------------
 assert_port_open(Port) ->
