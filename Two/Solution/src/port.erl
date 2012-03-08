@@ -2,12 +2,12 @@
 -export([open/3,
 	 close/1
 	]).
--record(port,{type :: echo,
+-record(port,{type :: echo | string(),
 	      socket :: gen_tcp:socket(),
 	      number :: integer()
 	     }).
 
--spec(open(string(),integer(),atom() | string()) -> {ok,gen_tcp:socket()} | 
+-spec(open(string(),integer(),atom() | string()) -> {ok,gen_tcp:socket()} |
 						    {error,no_such_module}|
 						    {error,compile_error}).
 open(_,Port,echo) ->
@@ -22,9 +22,17 @@ open(FileDir,Port,ModuleName) ->
 	false ->
 	    {error,no_such_module};
 	true ->
-	    case compile:file(filename:join(FileDir,ErlSource)) of
+	    case compile:file(filename:join(FileDir,ErlSource),[report_warnings,
+								report_errors,
+								binary]) of
 		error ->
-		    {error,compile_error}
+		    {error,compile_error};
+		{ok,Module,Binary} ->
+		    {module,Module} = code:load_binary(Module,ErlSource,Binary),
+		    {ok,Sock} = gen_tcp:listen(Port,[{active,false}]),		    
+		    {ok,#port{type = ModuleName,
+			      socket = Sock,
+			      number = Port}}
 	    end
     end.    
 
