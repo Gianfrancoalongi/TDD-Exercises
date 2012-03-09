@@ -18,7 +18,8 @@ Technical:
 	unbind $TYPE - removes declaration
 	list bind - lists all bindings
 
-	open $PORT $TYPE - opens a port on which all sent/received data is processed through the $TYPE binding
+	open $PORT $TYPE - opens a port on which all sent/received data is processed 
+                           through the $TYPE binding
 	close $PORT - closes the port which processed data through a specific $TYPE
 	list port - lists all user opened ports
 
