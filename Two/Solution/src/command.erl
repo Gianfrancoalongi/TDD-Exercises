@@ -23,7 +23,12 @@ parse("open "++Rest) ->
     [Port,Type] = string:tokens(Rest," "),
     #port{type = open,
 	  arguments = [{port,list_to_integer(Port)},
-		       {type,Type}]}.
+		       {type,Type}]};
+
+parse("close "++Rest) ->
+    #port{type = close,
+	  arguments = [{port,list_to_integer(Rest)}]}.
+
 
 
     

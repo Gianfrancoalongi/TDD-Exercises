@@ -29,6 +29,12 @@ open_test() ->
 		       arguments = [{port,1234},
 				    {type,"testtype"}]},
 		 command:parse(Command)).
-		       
+
+
+close_test() ->		       
+    Command = "close 1234",
+    ?assertMatch(#port{type = close,
+		       arguments = [{port,1234}]},
+		 command:parse(Command)).
     
     
