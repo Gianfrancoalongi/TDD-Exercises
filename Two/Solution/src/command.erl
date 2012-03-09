@@ -13,7 +13,12 @@ parse("bind "++Rest) ->
     [Type,File] = string:tokens(Rest," "),
     #binding{type = bind,
 	     arguments = [{type,Type},
-			  {file,File}]}.
+			  {file,File}]};
+
+parse("unbind "++Type) ->
+    #binding{type = unbind,
+	     arguments = [{type,Type}]}.
+
     
 	    
 

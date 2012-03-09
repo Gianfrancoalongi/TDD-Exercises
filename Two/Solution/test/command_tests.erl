@@ -16,5 +16,11 @@ bind_test() ->
 			  arguments = [{type,"testtype"},
 				       {file,"testfile.erl"}]},
 		 command:parse(Command)).
+
+unbind_test() ->
+    Command = "unbind testtype",
+    ?assertMatch(#binding{type = unbind,
+			  arguments = [{type,"testtype"}]},
+		 command:parse(Command)).
     
     
