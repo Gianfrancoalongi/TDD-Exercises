@@ -9,4 +9,12 @@ empty_command_test() ->
 list_bindings_test() ->
     Command = "list bind",
     ?assertMatch(#binding{type = list},command:parse(Command)).
+
+bind_test() ->
+    Command = "bind testtype testfile.erl",
+    ?assertMatch(#binding{type = bind,
+			  arguments = [{type,"testtype"},
+				       {file,"testfile.erl"}]},
+		 command:parse(Command)).
+    
     
