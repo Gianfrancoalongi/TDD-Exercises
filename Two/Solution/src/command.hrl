@@ -1,0 +1,1 @@
+-record(binding,{type :: list}).
