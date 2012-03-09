@@ -36,5 +36,10 @@ close_test() ->
     ?assertMatch(#port{type = close,
 		       arguments = [{port,1234}]},
 		 command:parse(Command)).
+
+list_port_test() ->
+    Command = "list port",
+    ?assertMatch(#port{type = list},
+		 command:parse(Command)).
     
     

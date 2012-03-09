@@ -27,7 +27,11 @@ parse("open "++Rest) ->
 
 parse("close "++Rest) ->
     #port{type = close,
-	  arguments = [{port,list_to_integer(Rest)}]}.
+	  arguments = [{port,list_to_integer(Rest)}]};
+
+parse("list port") ->
+    #port{type = list}.
+
 
 
 
