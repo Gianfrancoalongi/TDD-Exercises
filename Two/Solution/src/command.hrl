@@ -2,6 +2,6 @@
 		 arguments :: [{atom(),string()}]
 		}).
 
--record(open,{port :: non_neg_integer(),
-	      type :: string()
+-record(port,{type :: open,
+	      arguments :: [{atom(),string() | non_neg_integer()}]
 	     }).

@@ -2,7 +2,7 @@
 -export([parse/1]).
 -include("command.hrl").
 
--spec(parse(string()) -> {error,empty_command} | #binding{}).
+-spec(parse(string()) -> {error,empty_command} | #binding{} | #port{}).
 parse("") ->
     {error,empty_command};    
 
@@ -21,8 +21,9 @@ parse("unbind "++Type) ->
 
 parse("open "++Rest) ->
     [Port,Type] = string:tokens(Rest," "),
-    #open{port = list_to_integer(Port),
-	  type = Type}.
+    #port{type = open,
+	  arguments = [{port,list_to_integer(Port)},
+		       {type,Type}]}.
 
 
     
