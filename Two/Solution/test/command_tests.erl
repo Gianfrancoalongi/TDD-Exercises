@@ -22,5 +22,12 @@ unbind_test() ->
     ?assertMatch(#binding{type = unbind,
 			  arguments = [{type,"testtype"}]},
 		 command:parse(Command)).
+
+open_test() ->
+    Command = "open 1234 testtype",
+    ?assertMatch(#open{port = 1234,
+		       type = "testtype"},
+		 command:parse(Command)).
+		       
     
     

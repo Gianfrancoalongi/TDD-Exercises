@@ -17,7 +17,13 @@ parse("bind "++Rest) ->
 
 parse("unbind "++Type) ->
     #binding{type = unbind,
-	     arguments = [{type,Type}]}.
+	     arguments = [{type,Type}]};
+
+parse("open "++Rest) ->
+    [Port,Type] = string:tokens(Rest," "),
+    #open{port = list_to_integer(Port),
+	  type = Type}.
+
 
     
 	    
