@@ -59,4 +59,9 @@ perform_command(#binding{type = bind,arguments = Args},State) ->
     Type = proplists:get_value(type,Args),
     File = proplists:get_value(file,Args),
     Bindings = State#state.bindings,
-    {"binding created",State#state{bindings = [{Type,File}|Bindings]}}.
+    {"binding created",State#state{bindings = [{Type,File}|Bindings]}};
+perform_command(#binding{type = unbind,arguments = Args},State) ->
+    Type = proplists:get_value(type,Args),
+    Bindings = [{T,F} || {T,F} <- State#state.bindings,T =/= Type],
+    {"binding undone",State#state{bindings = Bindings}}.
+
