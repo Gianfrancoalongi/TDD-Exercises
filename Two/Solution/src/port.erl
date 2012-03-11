@@ -12,7 +12,7 @@
 						    {error,compile_error} |
 						    {error,no_handle_function_exported}).
 open(_,Port,echo) ->
-    {ok,Sock} = gen_tcp:listen(Port,[{active,false}]),
+    {ok,Sock} = gen_tcp:listen(Port,[{active,false},{reuseaddr,true}]),
     {ok,#port{type = echo,
 	      socket = Sock,
 	      number = Port}};
