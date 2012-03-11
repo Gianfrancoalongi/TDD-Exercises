@@ -1,6 +1,6 @@
 -module(server).
 -export([start/1,
-	 stop/0]).
+	 stop/1]).
 
 -spec(start([{atom(),string() | integer()}]) -> ok).
 start(Options) ->
@@ -13,16 +13,12 @@ start(Options) ->
 	{started,Pid,Ref} -> ok
     end.
 
--spec(stop() -> ok).
-stop() ->
-    Pid = self(),
-    Ref = make_ref(),
-    server ! {stop,Pid,Ref},
-    receive
-	{stopped,Ref} ->
-	    ok
-    end.
-	
+-spec(stop(non_neg_integer()) -> ok).
+stop(CommandPort) ->
+    {ok,Sock} = gen_tcp:connect("localhost",CommandPort,[{active,false}]),
+    gen_tcp:send(Sock,"stop"),
+    {ok,"stopping"} = gen_tcp:recv(Sock,0),
+    ok.
 
 start({To,Ref},FilesDir,CommandPort) ->
     {ok,Sock} = gen_tcp:listen(CommandPort,[{active,false}]),
@@ -31,9 +27,13 @@ start({To,Ref},FilesDir,CommandPort) ->
     loop(FilesDir,Sock).
 
 loop(_FilesDir,Sock) ->
-    receive
-	{stop,From,Ref} ->
-	    gen_tcp:close(Sock),
-	    unregister(server),
-	    From ! {stopped,Ref}
+    {ok,Session} = gen_tcp:accept(Sock),
+    case gen_tcp:recv(Session,0) of
+	{ok,"stop"} ->
+	    gen_tcp:send(Session,"stopping"),
+	    gen_tcp:close(Session),
+	    gen_tcp:close(Sock);
+	{error,closed} ->
+	    gen_tcp:close(Session),
+	    loop(_FilesDir,Sock)
     end.

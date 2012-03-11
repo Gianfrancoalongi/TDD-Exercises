@@ -8,14 +8,13 @@ server_start_test() ->
 	       {command_port,CommandPort}],
     ?assertMatch(ok,server:start(Options)),
     assert_port_open(CommandPort),
-    ?assertEqual(ok,server:stop()),
+    ?assertEqual(ok,server:stop(CommandPort)),
     assert_port_closed(CommandPort).
     
-
 %% --------------------------------------------------
 assert_port_open(Port) ->
     {ok,Sock} = gen_tcp:connect("localhost",Port,[]),
     gen_tcp:close(Sock).
 
 assert_port_closed(Port) ->
-    {error,econnrefused} = gen_tcp:connect("localhost",Port,[]).
+    {error,econnrefused} = gen_tcp:connect("localhost",Port,[]).    
