@@ -1,4 +1,5 @@
 -module(server).
+-include("command.hrl").
 -export([start/1,
 	 stop/1]).
 
@@ -21,7 +22,7 @@ stop(CommandPort) ->
     ok.
 
 start({To,Ref},FilesDir,CommandPort) ->
-    {ok,Sock} = gen_tcp:listen(CommandPort,[{active,false}]),
+    {ok,Sock} = gen_tcp:listen(CommandPort,[{active,false},{reuseaddr,true}]),
     register(server,self()),
     To ! {started,self(),Ref},
     loop(FilesDir,Sock).
@@ -29,11 +30,18 @@ start({To,Ref},FilesDir,CommandPort) ->
 loop(_FilesDir,Sock) ->
     {ok,Session} = gen_tcp:accept(Sock),
     case gen_tcp:recv(Session,0) of
+	{error,closed} ->
+	    gen_tcp:close(Session),
+	    loop(_FilesDir,Sock);
 	{ok,"stop"} ->
 	    gen_tcp:send(Session,"stopping"),
 	    gen_tcp:close(Session),
 	    gen_tcp:close(Sock);
-	{error,closed} ->
-	    gen_tcp:close(Session),
-	    loop(_FilesDir,Sock)
+	{ok,Command} ->
+	    Res = command:parse(Command),
+	    case Res of
+		#binding{type = list} ->
+		    gen_tcp:send(Session,"bindings: none"),
+		    loop(_FilesDir,Sock)
+	    end	    
     end.
