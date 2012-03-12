@@ -17,7 +17,8 @@ command_test_() ->
      fun stop/1,
      [fun list_bind/0,
       fun bind_type/0,
-      fun unbind_type/0
+      fun unbind_type/0,
+      fun list_port/0
       ]}.
 
 list_bind() ->
@@ -35,6 +36,10 @@ unbind_type() ->
     ?assertEqual("binding undone",send_receive_command("unbind testtype")),
     ?assertEqual("bindings: none",send_receive_command("list bind")).
     
+list_port() ->
+    ?assertEqual("ports:\n"
+		 " command-port, 50001",
+		 send_receive_command("list port")).
     
     
 %% --------------------------------------------------
