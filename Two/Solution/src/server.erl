@@ -84,10 +84,8 @@ perform_command(#port_command{type = list},State) ->
 
 perform_command(#port_command{type = open,arguments = Args}, State) ->
     [Port,Type] = pick([port,type],Args),
-    Bindings = State#state.bindings,
+    #state{bindings = Bindings, files_dir = Dir, ports = Ports} = State,
     File = proplists:get_value(Type,Bindings),
-    Dir = State#state.files_dir,
-    Ports = State#state.ports,
     Pid = spawn(fun() ->
 			{ok,PortRecord} = port:open(Dir,Port,File),
 			port_loop(PortRecord)

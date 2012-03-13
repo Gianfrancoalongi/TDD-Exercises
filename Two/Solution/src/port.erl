@@ -26,19 +26,22 @@ open(FileDir,Port,ModuleName) ->
 		error ->
 		    {error,compile_error};
 		{ok,Module,Binary} ->
-		    {module,Module} = code:load_binary(Module,ErlSource,Binary),
-		    case erlang:function_exported(Module,handle,1) of
-			false ->
-			    {error,no_handle_function_exported};
-			true ->
-			    {ok,Sock} = gen_tcp:listen(Port,[{active,false}]),		    
-			    {ok,#port{type = ModuleName,
-				      socket = Sock,
-				      number = Port}}
-		    end
+		    try_load(ModuleName,Module,ErlSource,Binary,Port)
 	    end
-    end.    
+    end.
 
+try_load(ModuleName,Module,ErlSource,Binary,Port) ->
+    {module,Module} = code:load_binary(Module,ErlSource,Binary),
+    case erlang:function_exported(Module,handle,1) of
+	false ->
+	    {error,no_handle_function_exported};
+	true ->
+	    {ok,Sock} = gen_tcp:listen(Port,[{active,false}]),		    
+	    {ok,#port{type = ModuleName,
+		      socket = Sock,
+		      number = Port}}
+    end.
+    
 
 -spec(close(#port{}) -> ok).
 close(Port) ->
