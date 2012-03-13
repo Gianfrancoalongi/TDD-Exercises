@@ -53,7 +53,19 @@ port_handle_test() ->
     {ok,Openport} = port:open(FileDir,Port,Type),
     Input = "this will be the same",
     Result = port:handle(Openport,Input),
-    ?assertEqual("this will be the same",Result).
+    ?assertEqual("this will be the same",Result),
+    port:close(Openport).
+
+port_handle_builtin_echo_test() ->
+    Port = 50007,
+    Type = echo,
+    FileDir = "./test/test_files/",
+    {ok,Openport} = port:open(FileDir,Port,Type),
+    Input = "this will be the same",
+    Result = port:handle(Openport,Input),
+    ?assertEqual("this will be the same",Result),
+    port:close(Openport).
+    
 		 
 
 %% ------------------------------------------------------------

@@ -50,6 +50,8 @@ close(Port) ->
 	
 
 -spec(handle(#port{},string()) -> string()).
+handle(#port{type = echo},Input) ->
+    Input;
 handle(Port,Input) ->
     Mod = list_to_atom(Port#port.type),
     Mod:handle(Input).
