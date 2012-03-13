@@ -8,38 +8,38 @@ empty_command_test() ->
 
 list_bindings_test() ->
     Command = "list bind",
-    ?assertMatch(#binding{type = list},command:parse(Command)).
+    ?assertMatch(#binding_command{type = list},command:parse(Command)).
 
 bind_test() ->
     Command = "bind testtype testfile.erl",
-    ?assertMatch(#binding{type = bind,
-			  arguments = [{type,"testtype"},
-				       {file,"testfile.erl"}]},
+    ?assertMatch(#binding_command{type = bind,
+				  arguments = [{type,"testtype"},
+					       {file,"testfile.erl"}]},
 		 command:parse(Command)).
 
 unbind_test() ->
     Command = "unbind testtype",
-    ?assertMatch(#binding{type = unbind,
-			  arguments = [{type,"testtype"}]},
+    ?assertMatch(#binding_command{type = unbind,
+				  arguments = [{type,"testtype"}]},
 		 command:parse(Command)).
 
 open_test() ->
     Command = "open 1234 testtype",
-    ?assertMatch(#port{type = open,
-		       arguments = [{port,1234},
-				    {type,"testtype"}]},
+    ?assertMatch(#port_command{type = open,
+			       arguments = [{port,1234},
+					    {type,"testtype"}]},
 		 command:parse(Command)).
 
 
 close_test() ->		       
     Command = "close 1234",
-    ?assertMatch(#port{type = close,
-		       arguments = [{port,1234}]},
+    ?assertMatch(#port_command{type = close,
+			       arguments = [{port,1234}]},
 		 command:parse(Command)).
 
 list_port_test() ->
     Command = "list port",
-    ?assertMatch(#port{type = list},
+    ?assertMatch(#port_command{type = list},
 		 command:parse(Command)).
     
     

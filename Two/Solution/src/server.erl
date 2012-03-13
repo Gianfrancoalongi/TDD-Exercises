@@ -1,11 +1,13 @@
 -module(server).
 -include("command.hrl").
+-include("port.hrl").
 -export([start/1,
 	 stop/1]).
 
 -record(state,{bindings = [] :: [{string(),string()}],
-	       ports = [] :: [{atom(),non_neg_integer()}],
-	       command_port :: non_neg_integer()
+	       ports = [] :: [{atom(),non_neg_integer(),pid()}],
+	       command_port :: non_neg_integer(),
+	       files_dir :: string()
 	      }).
 
 -spec(start([{atom(),string() | integer()}]) -> ok).
@@ -30,14 +32,16 @@ start({To,Ref},FilesDir,CommandPort) ->
     {ok,Sock} = gen_tcp:listen(CommandPort,[{active,false},{reuseaddr,true}]),
     register(server,self()),
     To ! {started,self(),Ref},
-    loop(FilesDir,Sock,#state{command_port = CommandPort}).
+    loop(Sock,#state{command_port = CommandPort,
+		     files_dir = FilesDir
+		    }).
 
-loop(_FilesDir,Sock,ServerState) ->
+loop(Sock,ServerState) ->
     {ok,Session} = gen_tcp:accept(Sock),
     case gen_tcp:recv(Session,0) of
 	{error,closed} ->
 	    gen_tcp:close(Session),
-	    loop(_FilesDir,Sock,ServerState);
+	    loop(Sock,ServerState);
 	{ok,"stop"} ->
 	    gen_tcp:send(Session,"stopping"),
 	    gen_tcp:close(Session),
@@ -46,37 +50,70 @@ loop(_FilesDir,Sock,ServerState) ->
 	    Res = command:parse(Command),
 	    {Reply,NewServerState} = perform_command(Res,ServerState),
 	    gen_tcp:send(Session,Reply),
-	    loop(_FilesDir,Sock,NewServerState)
+	    loop(Sock,NewServerState)
     end.
 
-perform_command(#binding{type = list},#state{bindings = []} = State) ->
+perform_command(#binding_command{type = list},#state{bindings = []} = State) ->
     {"bindings: none",State};
 
-perform_command(#binding{type = list},#state{bindings = Bindings} = State) ->
+perform_command(#binding_command{type = list},#state{bindings = Bindings} = State) ->
     {lists:foldl(
        fun({Type,File},Res) -> Res++"\n "++Type++", "++File
        end,
        "bindings:",
        Bindings),State};
 
-perform_command(#binding{type = bind,arguments = Args},State) ->
-    Type = proplists:get_value(type,Args),
-    File = proplists:get_value(file,Args),
+perform_command(#binding_command{type = bind,arguments = Args},State) ->
+    [Type,File] = pick([type,file],Args),
     Bindings = State#state.bindings,
     {"binding created",State#state{bindings = [{Type,File}|Bindings]}};
 
-perform_command(#binding{type = unbind,arguments = Args},State) ->
+perform_command(#binding_command{type = unbind,arguments = Args},State) ->
     Type = proplists:get_value(type,Args),
     Bindings = [{T,F} || {T,F} <- State#state.bindings,T =/= Type],
     {"binding undone",State#state{bindings = Bindings}};
 
-perform_command(#port{type = list},State) ->
+perform_command(#port_command{type = list},State) ->
     Last = "\n command-port, "++integer_to_list(State#state.command_port),
     {lists:foldl(
-       fun(_,Acc) -> ""++Acc
+       fun({Type,Port,_Pid},Acc) -> 
+	       Acc ++ "\n "++Type++", "++integer_to_list(Port)
        end,
        "ports:",
-       State#state.ports)++Last,State}.
+       State#state.ports)++Last,State};
+
+perform_command(#port_command{type = open,arguments = Args}, State) ->
+    [Port,Type] = pick([port,type],Args),
+    Bindings = State#state.bindings,
+    File = proplists:get_value(Type,Bindings),
+    Dir = State#state.files_dir,
+    Ports = State#state.ports,
+    Pid = spawn(fun() ->
+			{ok,PortRecord} = port:open(Dir,Port,File),
+			port_loop(PortRecord)
+		end),
+    {"port opened",State#state{ports = [{Type,Port,Pid}|Ports]}}.
+    
+port_loop(#port{socket = Sock} = Port) ->
+    {ok,Active} = gen_tcp:accept(Sock),
+    spawn(fun() ->
+		  {ok,Got} = gen_tcp:recv(Active,0),
+		  gen_tcp:send(Active,port:handle(Port,Got)),
+		  gen_tcp:close(Active)
+	  end),
+    port_loop(Port).
+
+
+pick(What,From) ->
+    pick_aux(What,From,[]).
+
+pick_aux([],_,Res) ->
+    lists:reverse(Res);
+pick_aux([P|T],From,Res) ->
+    pick_aux(T,From,[proplists:get_value(P,From)|Res]).
+
+		  
+    
 
 
 

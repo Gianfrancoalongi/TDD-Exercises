@@ -57,7 +57,7 @@ port_handle_test() ->
     port:close(Openport).
 
 port_handle_builtin_echo_test() ->
-    Port = 50007,
+    Port = 50008,
     Type = echo,
     FileDir = "./test/test_files/",
     {ok,Openport} = port:open(FileDir,Port,Type),

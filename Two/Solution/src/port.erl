@@ -1,14 +1,10 @@
 -module(port).
+-include("port.hrl").
 -export([open/3,
 	 close/1,
 	 handle/2
 	]).
--record(port,{type :: echo | string(),
-	      socket :: gen_tcp:socket(),
-	      number :: integer()
-	     }).
-
--spec(open(string(),integer(),atom() | string()) -> {ok,gen_tcp:socket()} |
+-spec(open(string(),integer(),atom() | string()) -> {ok,#port{}} |
 						    {error,no_such_module}|
 						    {error,compile_error} |
 						    {error,no_handle_function_exported}).

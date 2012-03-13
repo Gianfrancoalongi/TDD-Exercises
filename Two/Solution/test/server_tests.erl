@@ -18,7 +18,8 @@ command_test_() ->
      [fun list_bind/0,
       fun bind_type/0,
       fun unbind_type/0,
-      fun list_port/0
+      fun list_port/0,
+      fun open_port/0
       ]}.
 
 list_bind() ->
@@ -38,6 +39,14 @@ unbind_type() ->
     
 list_port() ->
     ?assertEqual("ports:\n"
+		 " command-port, 50001",
+		 send_receive_command("list port")).
+
+open_port() ->
+    ?assertEqual("binding created",send_receive_command("bind ab echo")),
+    ?assertEqual("port opened",send_receive_command("open 50002 ab")),
+    ?assertEqual("ports:\n"
+		 " ab, 50002\n"
 		 " command-port, 50001",
 		 send_receive_command("list port")).
     
