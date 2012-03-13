@@ -1,6 +1,7 @@
 -module(port).
 -export([open/3,
-	 close/1
+	 close/1,
+	 handle/2
 	]).
 -record(port,{type :: echo | string(),
 	      socket :: gen_tcp:socket(),
@@ -47,4 +48,10 @@ open(FileDir,Port,ModuleName) ->
 close(Port) ->
     gen_tcp:close(Port#port.socket).
 	
+
+-spec(handle(#port{},string()) -> string()).
+handle(Port,Input) ->
+    Mod = list_to_atom(Port#port.type),
+    Mod:handle(Input).
+    
     

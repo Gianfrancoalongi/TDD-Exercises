@@ -46,6 +46,16 @@ module_exists_and_is_clean_open_test() ->
     port:close(Openport),
     assert_port_closed(Port).
 
+port_handle_test() ->
+    Port = 50007,
+    Type = "compilation_clean_module",
+    FileDir = "./test/test_files/",
+    {ok,Openport} = port:open(FileDir,Port,Type),
+    Input = "this will be the same",
+    Result = port:handle(Openport,Input),
+    ?assertEqual("this will be the same",Result).
+		 
+
 %% ------------------------------------------------------------
 assert_port_open(Port) ->
     {ok,Sock} = gen_tcp:connect("localhost",Port,[]),
