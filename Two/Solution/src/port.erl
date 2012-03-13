@@ -36,7 +36,8 @@ try_load(ModuleName,Module,ErlSource,Binary,Port) ->
 	false ->
 	    {error,no_handle_function_exported};
 	true ->
-	    {ok,Sock} = gen_tcp:listen(Port,[{active,false}]),		    
+	    {ok,Sock} = gen_tcp:listen(Port,[{reuseaddr,true},
+					     {active,false}]),		    
 	    {ok,#port{type = ModuleName,
 		      socket = Sock,
 		      number = Port}}

@@ -19,7 +19,8 @@ command_test_() ->
       fun bind_type/0,
       fun unbind_type/0,
       fun list_port/0,
-      fun open_port/0
+      fun open_port/0,
+      fun open_echo_port_send/0
       ]}.
 
 list_bind() ->
@@ -49,7 +50,11 @@ open_port() ->
 		 " ab, 50002\n"
 		 " command-port, 50001",
 		 send_receive_command("list port")).
-    
+
+open_echo_port_send() ->
+    send_receive_command("bind ab echo"),
+    send_receive_command("open 50003 ab"),
+    ?assertEqual("this is echoed",send_receive_on_port(50003,"this is echoed")).
     
 %% --------------------------------------------------
 start() ->
@@ -69,7 +74,11 @@ assert_port_closed(Port) ->
     {error,econnrefused} = gen_tcp:connect("localhost",Port,[]).
 
 send_receive_command(Command) ->
-    {ok,Sock} = gen_tcp:connect("localhost",?COMMAND_PORT,[{active,false}]),
-    gen_tcp:send(Sock,Command),
+    send_receive_on_port(?COMMAND_PORT,Command).
+
+send_receive_on_port(Port,Send) ->
+    {ok,Sock} = gen_tcp:connect("localhost",Port,[{active,false}]),
+    gen_tcp:send(Sock,Send),
     {ok,Socket} = gen_tcp:recv(Sock,0),
     Socket.
+    
