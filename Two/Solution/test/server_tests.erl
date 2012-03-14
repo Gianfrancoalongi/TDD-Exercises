@@ -15,12 +15,14 @@ command_test_() ->
     {foreach,
      fun start/0,
      fun stop/1,
-     [fun list_bind/0,
+     [
+      fun list_bind/0,
       fun bind_type/0,
       fun unbind_type/0,
       fun list_port/0,
       fun open_port/0,
-      fun open_echo_port_send/0
+      fun open_echo_port_send/0,
+      fun open_reverse_port_send/0
       ]}.
 
 list_bind() ->
@@ -56,6 +58,12 @@ open_echo_port_send() ->
     send_receive_command("open 50003 ab"),
     ?assertEqual("this is echoed",send_receive_on_port(50003,"this is echoed")).
     
+open_reverse_port_send() ->
+    send_receive_command("bind rev reverse_module"),
+    send_receive_command("open 50010 rev"),
+    ?assertEqual("deohce si siht",send_receive_on_port(50010,"this is echoed")).
+
+
 %% --------------------------------------------------
 start() ->
     Options = [{files,"./test/test_files/"},
@@ -80,5 +88,6 @@ send_receive_on_port(Port,Send) ->
     {ok,Sock} = gen_tcp:connect("localhost",Port,[{active,false}]),
     gen_tcp:send(Sock,Send),
     {ok,Socket} = gen_tcp:recv(Sock,0),
+    gen_tcp:close(Sock),
     Socket.
     

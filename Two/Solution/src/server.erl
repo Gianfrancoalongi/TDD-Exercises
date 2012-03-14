@@ -86,16 +86,22 @@ perform_command(#port_command{type = open,arguments = Args}, State) ->
     [Port,Type] = pick([port,type],Args),
     #state{bindings = Bindings, files_dir = Dir, ports = Ports} = State,
     File = proplists:get_value(Type,Bindings),
+    Ref = make_ref(),
+    Self = self(),
     Pid = spawn_link(fun() ->
 			     {ok,PortRecord} = port:open(Dir,Port,File),
+			     Self ! {opened,Ref,self()},
 			     port_loop(PortRecord)
 		     end),
+    receive
+	{opened,Ref,Pid} -> ok
+    end,
     {"port opened",State#state{ports = [{Type,Port,Pid}|Ports]}}.
 
 port_loop(#port{socket = Sock} = Port) ->
     {ok,Active} = gen_tcp:accept(Sock),
     spawn_link(fun() ->
-		       {ok,Got} = gen_tcp:recv(Active,0),
+		       {ok,Got} = gen_tcp:recv(Active,0),		       
 		       gen_tcp:send(Active,port:handle(Port,Got)),
 		       gen_tcp:close(Active)
 	       end),
