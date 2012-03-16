@@ -100,7 +100,12 @@ perform_command(#port_command{type = open,arguments = Args}, State) ->
     receive
 	{opened,Ref,Pid,PortRecord} -> ok
     end,
-    {"port opened",State#state{ports = [{Type,PortRecord,Pid}|Ports]}}.
+    {"port opened",State#state{ports = [{Type,PortRecord,Pid}|Ports]}};
+
+perform_command(#port_command{type = close,arguments = Args}, State) ->
+    [Port] = pick([port],Args),
+    Ports = close_and_remove_selected_port(Port,State#state.ports),
+    {"port closed",State#state{ports = Ports}}.
 
 port_loop(#port{socket = Sock} = Port) ->
     case gen_tcp:accept(Sock) of
@@ -124,7 +129,15 @@ pick_aux([],_,Res) ->
 pick_aux([P|T],From,Res) ->
     pick_aux(T,From,[proplists:get_value(P,From)|Res]).
 
-		  
+close_and_remove_selected_port(PortNumber,[#port{number = PortNumber, 
+						 socket = Sock} | Ports]) ->
+    gen_tcp:close(Sock),
+    Ports;
+close_and_remove_selected_port(PortNumber,[X|Ports]) ->
+    [X|close_and_remove_selected_port(PortNumber,Ports)];
+close_and_remove_selected_port(_,[]) -> [].
+
+
     
 
 

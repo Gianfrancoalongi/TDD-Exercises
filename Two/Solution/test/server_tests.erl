@@ -23,7 +23,8 @@ command_test_() ->
       fun open_port/0,
       fun open_echo_port_send/0,
       fun open_reverse_port_send/0,
-      fun open_reverse_uppercase_and_echo_send/0
+      fun open_reverse_uppercase_and_echo_send/0,
+      fun open_close/0
       ]}.
 
 list_bind() ->
@@ -74,10 +75,13 @@ open_reverse_uppercase_and_echo_send() ->
     ?assertEqual("deohce si siht",send_receive_on_port(50002,"this is echoed")),
     ?assertEqual("this is echoed",send_receive_on_port(50003,"this is echoed")),
     ?assertEqual("THIS IS ECHOED",send_receive_on_port(50004,"this is echoed")).
-    
-    
-    
-    
+        
+open_close() ->    
+    send_receive_command("bind ech echo"),
+    send_receive_command("open 50003 ech"),
+    Res = send_receive_command("close 50003"),
+    ?assertEqual("port closed",Res),
+    assert_port_closed(5003).
 
 
 %% --------------------------------------------------
