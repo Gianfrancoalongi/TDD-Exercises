@@ -5,7 +5,7 @@
 	 stop/1]).
 
 -record(state,{bindings = [] :: [{string(),string()}],
-	       ports = [] :: [{atom(),non_neg_integer(),pid()}],
+	       ports = [] :: [{atom(),#port{},pid()}],
 	       command_port :: non_neg_integer(),
 	       files_dir :: string()
 	      }).
@@ -43,9 +43,13 @@ loop(Sock,ServerState) ->
 	    gen_tcp:close(Session),
 	    loop(Sock,ServerState);
 	{ok,"stop"} ->
-	    gen_tcp:send(Session,"stopping"),
+	    gen_tcp:send(Session,"stopping"),	    
 	    gen_tcp:close(Session),
-	    gen_tcp:close(Sock);
+	    gen_tcp:close(Sock),
+	    Ports = ServerState#state.ports,
+	    lists:foreach(
+	      fun({_,#port{socket = PortSocket},_}) -> gen_tcp:close(PortSocket)
+	      end,Ports);
 	{ok,Command} ->
 	    Res = command:parse(Command),
 	    {Reply,NewServerState} = perform_command(Res,ServerState),
@@ -77,7 +81,7 @@ perform_command(#port_command{type = list},State) ->
     Last = "\n command-port, "++integer_to_list(State#state.command_port),
     {lists:foldl(
        fun({Type,Port,_Pid},Acc) -> 
-	       Acc ++ "\n "++Type++", "++integer_to_list(Port)
+	       Acc ++ "\n "++Type++", "++integer_to_list(Port#port.number)
        end,
        "ports:",
        State#state.ports)++Last,State};
@@ -90,22 +94,26 @@ perform_command(#port_command{type = open,arguments = Args}, State) ->
     Self = self(),
     Pid = spawn_link(fun() ->
 			     {ok,PortRecord} = port:open(Dir,Port,File),
-			     Self ! {opened,Ref,self()},
+			     Self ! {opened,Ref,self(),PortRecord},
 			     port_loop(PortRecord)
 		     end),
     receive
-	{opened,Ref,Pid} -> ok
+	{opened,Ref,Pid,PortRecord} -> ok
     end,
-    {"port opened",State#state{ports = [{Type,Port,Pid}|Ports]}}.
+    {"port opened",State#state{ports = [{Type,PortRecord,Pid}|Ports]}}.
 
 port_loop(#port{socket = Sock} = Port) ->
-    {ok,Active} = gen_tcp:accept(Sock),
-    spawn_link(fun() ->
-		       {ok,Got} = gen_tcp:recv(Active,0),		       
-		       gen_tcp:send(Active,port:handle(Port,Got)),
-		       gen_tcp:close(Active)
-	       end),
-    port_loop(Port).
+    case gen_tcp:accept(Sock) of
+	{error,closed} ->
+	    ok;
+	{ok,Active} ->
+	    spawn_link(fun() ->
+			       {ok,Got} = gen_tcp:recv(Active,0),		       
+			       gen_tcp:send(Active,port:handle(Port,Got)),
+			       gen_tcp:close(Active)
+		       end),
+	    port_loop(Port)
+    end.
 
 
 pick(What,From) ->
