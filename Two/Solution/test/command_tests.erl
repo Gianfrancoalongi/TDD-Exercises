@@ -41,5 +41,11 @@ list_port_test() ->
     Command = "list port",
     ?assertMatch(#port_command{type = list},
 		 command:parse(Command)).
+
+handle_input_with_rn_test() ->
+    Command = "list port\r\n",
+    ?assertMatch(#port_command{type = list},
+		 command:parse(Command)).
+		 
     
     
