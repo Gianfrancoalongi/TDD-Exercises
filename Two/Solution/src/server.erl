@@ -129,8 +129,8 @@ pick_aux([],_,Res) ->
 pick_aux([P|T],From,Res) ->
     pick_aux(T,From,[proplists:get_value(P,From)|Res]).
 
-close_and_remove_selected_port(PortNumber,[#port{number = PortNumber, 
-						 socket = Sock} | Ports]) ->
+close_and_remove_selected_port(PortNumber,[{_,#port{number = PortNumber, 
+						    socket = Sock},_} | Ports]) ->
     gen_tcp:close(Sock),
     Ports;
 close_and_remove_selected_port(PortNumber,[X|Ports]) ->
