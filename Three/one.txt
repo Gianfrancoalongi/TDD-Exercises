@@ -1,0 +1,42 @@
+Background:
+	On the tenth hour of the Massive Dynamic Homecoming hackaton, your teams
+	polyglot system using Java, Ruby and Perl needs a simple and 
+	homerolled publish subscribe system.
+	 
+	As the messaging backend, this must be tested before sent to the arena
+	as the judges only give each solution one chance.
+
+	There are high demands on fault handling.
+
+Technical:
+	Implement a Publish Subscribe system with the following functionality and
+	requirements
+
+	- Clients connect through TCP sockets
+
+	A connected client
+ 	 - Registers by sending 'register $NAME'
+	 - Deregisters by sending 'deregister $NAME'
+	 - Subscribes to messages from a source by sending 'subscribe $NAME'
+	 - Unsubscribes from messages from a source by sending 'unsubscribe $NAME'
+	 - Receives messages it subscribes to as 'message $MESSAGE_ID $BYTE_SIZE_OF_MESSAGE $MESSAGE'
+	 - ACKs each message received before receiving another, ack format is 'ack $MESSAGE_ID'
+	 - Holds a persistent connection that is only closed by the client.
+
+ 
+        In order to have a good view of the system, a good enough operator interface is needed
+	to allow the team to search for flaws while intergrating and adding more 
+	services.
+
+
+      
+
+    
+	
+	
+	    
+		
+	
+	 
+	
+	
