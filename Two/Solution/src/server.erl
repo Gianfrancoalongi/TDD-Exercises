@@ -54,6 +54,7 @@ loop(Sock,ServerState) ->
 	    Res = command:parse(Command),
 	    {Reply,NewServerState} = perform_command(Res,ServerState),
 	    gen_tcp:send(Session,Reply),
+	    gen_tcp:close(Session),
 	    loop(Sock,NewServerState)
     end.
 
