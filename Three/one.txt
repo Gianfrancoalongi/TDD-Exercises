@@ -9,21 +9,27 @@ Background:
 	There are high demands on fault handling.
 
 Technical:
-	Implement a Publish Subscribe system with the following functionality and
-	requirements
+	Implement a Publish Subscribe system described as the following
 
 	- Clients connect through TCP sockets
+	- Each client communicates with the PubSub system using 
+	   - A dedicated Send TCP connection for Publishing Messages
+	   - A dedicated Receive TCP connection for Subscribing and Receiving Messages
+	   - This is indicated by sending
+	      - 'publish-connection'
+	      - 'receive-connection'
+	     on the chosen TCP connection once connected.
 
 	A connected client
- 	 - Registers by sending 'register $NAME'
-	 - Deregisters by sending 'deregister $NAME'
 	 - Subscribes to messages from a source by sending 'subscribe $NAME'
 	 - Unsubscribes from messages from a source by sending 'unsubscribe $NAME'
+         - Sends messages to a named source by sending 'message $NAME $BYTE_SIZE $MESSAGE' through
+	   the Publish connection 
 	 - Receives messages it subscribes to as 'message $MESSAGE_ID $BYTE_SIZE_OF_MESSAGE $MESSAGE'
+	   these are received through the Subscribe connection
 	 - ACKs each message received before receiving another, ack format is 'ack $MESSAGE_ID'
-	 - Holds a persistent connection that is only closed by the client.
-
- 
+	   this is replied to through the Subscribe connection, i.e the same socket it received it from
+	  
         In order to have a good view of the system, a good enough operator interface is needed
 	to allow the team to search for flaws while intergrating and adding more 
 	services.
