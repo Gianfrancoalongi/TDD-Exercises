@@ -1,0 +1,76 @@
+
+Client					Pubsub
+ |					|
+ |					|
+ |-------------TCP connection-----------|
+ |					|
+ |					|
+ |-------------TCP connection-----------|
+
+Client connects to the same main port and established
+TCP connections are set up.
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Client					Pubsub
+ |					|
+ |					|---
+ |-------------TCP connection-----------| P |
+ |	publish-connection>>		|---
+ |					|   |
+ |-------------TCP connection-----------| S |
+ |      subscribe-connection>>		|---
+
+Client indicates which TCP connection is Publish 
+and which is for Subscribe
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Client 					Pubsub
+ |					|
+ |					|---		---
+ |-------------TCP connection-----------| P |		| |
+ |		   			|---		| | ---
+ |					|   |		| | |A|
+ |-------------TCP connection-----------| S |----Pid--->| | | | [ Pid ]
+ |      subscribe A>> 			|---		| | |_|
+
+Client subscribes to a named port (if this is not existent
+ it will be created).
+Subscribe port identifier sent to port controller for A
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Client 	       		       	       Pubsub
+ |					|
+ |					|---		---
+ |-------------TCP connection-----------| P |		| |  
+ |		   			|---		| | --- <-- M1 M2 M3
+ |					|   |		| | |A|
+ |-------------TCP connection-----------| S |<-M1 M2 M3 | | | | [ Pid ]
+ |   <<M1 M2 M3        			|---		| | |_|
+
+Multiple messages arrive to the A port from a publisher.
+The A port holds the identifier of the Subscribe port which
+is interested and sends the messages to this subscriber
+
+Messages are sent in order and the next one is not sent until
+the last one was ACKed
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Client 					Pubsub		--- ---
+ |					|               | | |B|
+ |					|---		| | | |
+ |-------------TCP connection-----------| P |-Message->	| | |_|
+ |	message B 5 hello >>		|---		| | ---
+ |					|   |		| | |A|
+ |-------------TCP connection-----------| S |----Pid--->| | | | [ Pid ]
+ |      	    			|---		| | |_|
+
+The client publishes a message to a named port B, this is
+created if it does not exist (if no one is subscribing - the messages
+are discarded)
+
+
+
