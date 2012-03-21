@@ -39,6 +39,9 @@ get_pipes() ->
 init([]) ->
     {ok, #state{pipes = ets:new(pipes,[bag])}}.
 
+handle_call(stop,_From,State) ->
+    {stop,ok,State};
+
 handle_call({create_pipe,PipeName}, _From, State) ->
     ets:insert_new(State#state.pipes,{PipeName,[]}),
     {reply, ok, State};
