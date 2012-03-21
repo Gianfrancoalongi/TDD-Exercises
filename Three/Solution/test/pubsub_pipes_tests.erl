@@ -7,7 +7,8 @@ pipe_test_() ->
      fun cleanup/1,
      [
       fun create_pipe/0,
-      fun register_on_pipe/0
+      fun register_on_pipe/0,
+      fun deregister_from_pipe/0
       ]}.
 
 setup() ->
@@ -28,5 +29,13 @@ register_on_pipe() ->
     ok = pubsub_pipes:new_pipe(PipeName),
     ok = pubsub_pipes:subscribe_to_pipe(PipeName),    
     ?assertEqual([Self],pubsub_pipes:get_subscribers_to_pipe(PipeName)).
+
+deregister_from_pipe() ->
+    PipeName = "A",
+    ok = pubsub_pipes:new_pipe(PipeName),
+    ok = pubsub_pipes:subscribe_to_pipe(PipeName),    
+    ok = pubsub_pipes:unsubscribe_from_pipe(PipeName),
+    ?assertEqual([],pubsub_pipes:get_subscribers_to_pipe(PipeName)).
+    
 		       
     

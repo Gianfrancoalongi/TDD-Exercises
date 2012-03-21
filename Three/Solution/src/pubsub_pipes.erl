@@ -9,7 +9,8 @@
 -export([new_pipe/1,
 	 get_pipes/0,
 	 subscribe_to_pipe/1,
-	 get_subscribers_to_pipe/1
+	 get_subscribers_to_pipe/1,
+	 unsubscribe_from_pipe/1
 	 ]).
 -export([start_link/0,
 	 stop/0
@@ -45,6 +46,10 @@ subscribe_to_pipe(PipeName) ->
 get_subscribers_to_pipe(PipeName) ->
     gen_server:call(?MODULE,{get_subscribers_to_pipe,PipeName}).
 
+-spec(unsubscribe_from_pipe(string()) -> ok).
+unsubscribe_from_pipe(PipeName) ->
+    gen_server:call(?MODULE,{unsubscribe_from_pipe,PipeName,self()}).
+
 %%%===================================================================
 init([]) ->
     {ok, #state{pipes = ets:new(pipes,[set])}}.
@@ -69,7 +74,14 @@ handle_call({subscribe_to_pipe,PipeName,Pid},_From,State) ->
 
 handle_call({get_subscribers_to_pipe,PipeName},_From,State) ->
     [{PipeName,Subscribers}] = ets:lookup(State#state.pipes,PipeName),
-    {reply,Subscribers,State}.
+    {reply,Subscribers,State};
+
+handle_call({unsubscribe_from_pipe,PipeName,Pid},_From,State) ->
+    [{PipeName,Subscribers}] = ets:lookup(State#state.pipes,PipeName),
+    Removed = [ X || X <- Subscribers, X =/= Pid],
+    ets:insert(State#state.pipes,[{PipeName,Removed}]),
+    {reply,ok,State}.
+
 
 handle_cast(_Msg, State) ->
     {noreply, State}.
