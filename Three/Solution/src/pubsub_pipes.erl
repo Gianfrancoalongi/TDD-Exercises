@@ -7,7 +7,9 @@
 -behaviour(gen_server).
 
 -export([new_pipe/1,
-	 get_pipes/0
+	 get_pipes/0,
+	 subscribe_to_pipe/1,
+	 get_subscribers_to_pipe/1
 	 ]).
 -export([start_link/0,
 	 stop/0
@@ -35,9 +37,17 @@ new_pipe(PipeName) ->
 get_pipes() ->
     gen_server:call(?MODULE,get_pipes).
 
+-spec(subscribe_to_pipe(string()) -> ok).
+subscribe_to_pipe(PipeName) ->
+    gen_server:call(?MODULE,{subscribe_to_pipe,PipeName,self()}).
+
+-spec(get_subscribers_to_pipe(string()) -> [string()]).
+get_subscribers_to_pipe(PipeName) ->
+    gen_server:call(?MODULE,{get_subscribers_to_pipe,PipeName}).
+
 %%%===================================================================
 init([]) ->
-    {ok, #state{pipes = ets:new(pipes,[bag])}}.
+    {ok, #state{pipes = ets:new(pipes,[set])}}.
 
 handle_call(stop,_From,State) ->
     {stop,normal,ok,State};
@@ -50,7 +60,16 @@ handle_call(get_pipes,_From,State) ->
     Pipes = ets:foldl(fun({Key,_},Acc) -> [Key|Acc] end,
 		      [],
 		      State#state.pipes),
-    {reply,Pipes, State}.
+    {reply,Pipes, State};
+
+handle_call({subscribe_to_pipe,PipeName,Pid},_From,State) ->
+    [{PipeName,Subscribers}] = ets:lookup(State#state.pipes,PipeName),
+    ets:insert(State#state.pipes,[{PipeName,[Pid|Subscribers]}]),
+    {reply,ok,State};
+
+handle_call({get_subscribers_to_pipe,PipeName},_From,State) ->
+    [{PipeName,Subscribers}] = ets:lookup(State#state.pipes,PipeName),
+    {reply,Subscribers,State}.
 
 handle_cast(_Msg, State) ->
     {noreply, State}.
