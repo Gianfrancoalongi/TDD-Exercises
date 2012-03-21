@@ -17,7 +17,7 @@ Technical:
 	   - A dedicated Receive TCP connection for Subscribing and Receiving Messages
 	   - This is indicated by sending
 	      - 'publish-connection'
-	      - 'receive-connection'
+	      - 'subscribe-connection'
 	     on the chosen TCP connection once connected.
 
 	A connected client
