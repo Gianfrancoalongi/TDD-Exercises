@@ -5,12 +5,14 @@
 %%%-------------------------------------------------------------------
 -module(pubsub_pipes).
 -behaviour(gen_server).
+-include("message.hrl").
 
 -export([new_pipe/1,
 	 get_pipes/0,
 	 subscribe_to_pipe/1,
 	 get_subscribers_to_pipe/1,
-	 unsubscribe_from_pipe/1
+	 unsubscribe_from_pipe/1,
+	 publish_message_on_pipe/2
 	 ]).
 -export([start_link/0,
 	 stop/0
@@ -49,6 +51,11 @@ get_subscribers_to_pipe(PipeName) ->
 -spec(unsubscribe_from_pipe(string()) -> ok).
 unsubscribe_from_pipe(PipeName) ->
     gen_server:call(?MODULE,{unsubscribe_from_pipe,PipeName,self()}).
+      
+-spec(publish_message_on_pipe(string(),binary()) -> ok).
+publish_message_on_pipe(PipeName,Message) ->
+    gen_server:call(?MODULE,{publish_message,PipeName,Message}).
+    
 
 %%%===================================================================
 init([]) ->
@@ -80,7 +87,18 @@ handle_call({unsubscribe_from_pipe,PipeName,Pid},_From,State) ->
     [{PipeName,Subscribers}] = ets:lookup(State#state.pipes,PipeName),
     Removed = [ X || X <- Subscribers, X =/= Pid],
     ets:insert(State#state.pipes,[{PipeName,Removed}]),
+    {reply,ok,State};
+
+handle_call({publish_message,PipeName,BinaryMessage},_From,State) ->
+    [{PipeName,Subscribers}] = ets:lookup(State#state.pipes,PipeName),
+    Message = #message{pipe = PipeName,
+		       body = BinaryMessage,
+		       byte_size = erlang:byte_size(BinaryMessage)
+		      },
+    lists:foreach(fun(Subscriber) -> Subscriber ! Message end,
+		  Subscribers),
     {reply,ok,State}.
+
 
 
 handle_cast(_Msg, State) ->
