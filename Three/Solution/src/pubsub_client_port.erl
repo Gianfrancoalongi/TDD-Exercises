@@ -5,10 +5,12 @@
 %%%-------------------------------------------------------------------
 -module(pubsub_client_port).
 -behaviour(gen_server).
+-include("message.hrl").
 
 %% API
 -export([start_link/0,
-	 get_type/1]).
+	 get_type/1,
+	 handle_msg/2]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -24,12 +26,20 @@ start_link() ->
 get_type(Pid) ->
     gen_server:call(Pid,get_type).
 
+
+-spec(handle_msg(pid(),#pipe_declaration{}) -> ok).
+handle_msg(Pid,Msg) ->
+    gen_server:call(Pid,{handle_msg,Msg}).
+
 %%%===================================================================
 init([]) ->
     {ok, #state{}}.
 
 handle_call(get_type, _From, State) ->
-    {reply,State#state.type, State}.
+    {reply,State#state.type, State};
+handle_call({handle_msg,#pipe_declaration{type = Type}},_From,State) ->
+    {reply,ok,State#state{type = Type}}.
+
 
 handle_cast(_Msg, State) ->
     {noreply, State}.
