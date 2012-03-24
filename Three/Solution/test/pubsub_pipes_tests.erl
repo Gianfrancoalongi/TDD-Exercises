@@ -6,11 +6,13 @@ pipe_test_() ->
     {foreach,
      fun setup/0,
      fun cleanup/1,
-     [
-      fun create_pipe/0,
-      fun register_on_pipe/0,
-      fun deregister_from_pipe/0,
-      fun publish_message_on_pipe/0
+      [
+       {inorder,[
+		 fun create_pipe/0,
+		 fun register_on_pipe/0,
+		 fun deregister_from_pipe/0,
+		 fun publish_message_on_pipe/0
+		]}
       ]}.
 
 setup() ->
