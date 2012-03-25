@@ -12,6 +12,9 @@ parse_subscribe_selector_test() ->
     Res = pubsub_parser:parse(Message),
     ?assertMatch(#pipe_declaration{type = subscribe},Res).
     
-
+parse_ack_message_test() ->
+    Message = "ack MSG_ID",
+    Res = pubsub_parser:parse(Message),
+    ?assertMatch(#message_ack{id = "MSG_ID"},Res).
 
     

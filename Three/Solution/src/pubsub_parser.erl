@@ -6,5 +6,8 @@
 parse("publish-connection") ->
     #pipe_declaration{type = publish};
 parse("subscribe-connection") ->
-    #pipe_declaration{type = subscribe}.
+    #pipe_declaration{type = subscribe};
+parse("ack "++ID) ->
+    #message_ack{id = ID}.
+
 
